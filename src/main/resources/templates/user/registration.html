@@ -1,0 +1,54 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Статьи</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script defer src="js/jquery.min.js"></script>
+    <!-- Bootstrap JS + Popper JS -->
+    <script defer src="js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+</head>
+<body>
+    <div th:insert="base/header :: header"></div>
+        <h1>Регистрация нового пользователя</h1>
+        <form method="POST" th:action="@{/register}" id="registerForm" th:object="${user}">
+
+            <div class="mb-3 row">
+                <label for="username" class="col-sm-3 col-form-label">Имя пользователя</label>
+                <div class="col-sm-7">
+                    <input type="text" name="username" class="form-control" id="username" th:field="*{username}"/>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label for="password" class="col-sm-3 col-form-label">Пароль</label>
+                <div class="col-sm-7">
+                    <input type="password" name="password" class="form-control" id="password" th:field="*{password}"/>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label for="fullname" class="col-sm-3 col-form-label">Полное имя</label>
+                <div class="col-sm-7">
+                    <input type="text" name="fullname" class="form-control" id="fullname" th:field="*{fullname}"/>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label for="phoneNumber" class="col-sm-3 col-form-label">Телефон</label>
+                <div class="col-sm-7">
+                    <input type="text" name="phoneNumber" class="form-control" id="phoneNumber" th:field="*{phoneNumber}"/>
+                </div>
+            </div>
+
+            <p> <br><button type="submit" class="btn btn-primary">Регистрация</button></p>
+        </form>
+    <div th:insert="base/footer :: footer"></div>
+</body>
+</html>

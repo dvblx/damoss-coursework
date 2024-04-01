@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/2024-03-23--05-user_table.sql
+  - include:
+      file: db/changelog/changeset/2024-02-11--01-product_table.sql
+  - include:
+      file: db/changelog/changeset/2024-02-11--02-personal_computer_table.sql
+  - include:
+      file: db/changelog/changeset/2024-02-11--03-laptop_table.sql
+  - include:
+      file: db/changelog/changeset/2024-02-11--04-printer_table.sql

@@ -1,0 +1,48 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Статьи</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script defer src="js/jquery.min.js"></script>
+    <!-- Bootstrap JS + Popper JS -->
+    <script defer src="js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+</head>
+<body>
+<body>
+<div class="container-fluid">
+    <div th:insert="base/header :: header"></div>
+    <div class="container-fluid">
+        <div class="row justify-content-start ">
+            <p th:insert="~{product/printer/printer :: printerList}">
+            <div class="col-4 border px-4">
+                <form method="post" th:action="@{/product/printer/{printerId}(printerId=${printerEdit.getId()})}" th:object="${printerEdit}">
+                    <h3>Редактирование данных о товаре</h3>
+                    <br>
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-3 col-form-label">Заголовок</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="printerTitle" class="form-control" id="printerTitle" th:value="${printerEdit.getTitle()}" th:field="*{title}"/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="content" class="col-sm-3 col-form-label">Текст</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="printerContent" class="form-control" id="printerContent"  th:value="${printerEdit.getContent()}" th:field="*{content}"/>
+                        </div>
+                    </div>
+                    <p> <br><button type="submit" class="btn btn-primary">Изменить</button></p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div th:insert="base/footer :: footer"></div>
+</div>
+</body>
+</html>

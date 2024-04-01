@@ -1,0 +1,79 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Статьи</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script defer src="js/jquery.min.js"></script>
+    <!-- Bootstrap JS + Popper JS -->
+    <script defer src="js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+</head>
+<body>
+<body>
+<div class="container-fluid">
+    <div th:insert="base/header :: header"></div>
+    <div class="container-fluid">
+        <div class="row justify-content-start ">
+            <p th:insert="~{product/personal_computer/computer :: computerList}">
+            <div class="col-4 border px-4">
+                <form method="post" th:action="@{/product/personal-computer/{computerId}(computerId=${computer.getId()})}" th:object="${computer}">
+                    <h3>Редактирование данных о товаре</h3>
+                    <br>
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-3 col-form-label">Название модели</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="blogTitle" class="form-control" id="blogTitle" th:value="${computer.getProductData().getModelName()}" th:field="*{productData.modelName}"/>
+                            <span class="validationError" th:if="${#fields.hasErrors('productData.modelName')}" th:errors="*{productData.modelName}">Name Error</span>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-3 col-form-label">Стоимость</label>
+                        <div class="col-sm-7">
+                            <input type="number" step="0.01" name="blogTitle" class="form-control" id="blogTitle" th:value="${computer.getProductData().getPrice()}" th:field="*{productData.price}"/>
+                            <span class="validationError" th:if="${#fields.hasErrors('productData.price')}" th:errors="*{productData.price}">Name Error</span>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-3 col-form-label">Частота работы процессора (Гц)</label>
+                        <div class="col-sm-7">
+                            <input type="number" step="0.1" name="blogTitle" class="form-control" id="blogTitle" th:value="${computer.getSpeed()}" th:field="*{speed}"/>
+                            <span class="validationError" th:if="${#fields.hasErrors('speed')}" th:errors="*{speed}">Name Error</span>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-3 col-form-label">Объём оперативной памяти (Гб)</label>
+                        <div class="col-sm-7">
+                            <input type="number" name="blogTitle" class="form-control" id="blogTitle" th:value="${computer.getRam()}" th:field="*{ram}"/>
+                            <span class="validationError" th:if="${#fields.hasErrors('ram')}" th:errors="*{ram}">Name Error</span>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-3 col-form-label">Объём внутренней памяти (ГБ)</label>
+                        <div class="col-sm-7">
+                            <input type="number" name="blogTitle" class="form-control" id="blogTitle" th:value="${computer.getHd()}" th:field="*{hd}"/>
+                            <span class="validationError" th:if="${#fields.hasErrors('hd')}" th:errors="*{hd}">Name Error</span>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Автор</label>
+                        <div class="col-sm-7">
+                            <select class="form-control" th:field="*{cdType}">
+                                <option th:each="diskType : ${diskTypes}" th:value="${computer.getCdType()}" th:text="${diskType.getValue()}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <p> <br><button type="submit" class="btn btn-primary">Изменить</button></p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div th:insert="base/footer :: footer"></div>
+</div>
+</body>
+</html>

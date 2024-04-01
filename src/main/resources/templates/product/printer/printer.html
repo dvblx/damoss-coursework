@@ -1,0 +1,95 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Статьи</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script defer src="js/jquery.min.js"></script>
+    <!-- Bootstrap JS + Popper JS -->
+    <script defer src="js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+</head>
+<body>
+<body>
+<div class="container-fluid">
+    <div th:insert="base/header :: header"></div>
+    <div class="container-fluid">
+        <div class="row justify-content-start ">
+            <div class="col-8 border bg-light px-4" th:fragment="printerList">
+                <h3>Принтеры</h3>
+                <table class="table">
+                    <thead>
+                    <th scope="col">Название</th>
+                    <th scope="col">Стоимость</th>
+                    <th scope="col">Тип продукта</th>
+                    <th scope="col">Редактировать</th>
+                    <th scope="col">Удалить</th>
+                    </thead>
+                    <tbody>
+                    <div th:each="product : ${products}">
+                        <tr>
+                            <td th:text="${product.getModelName()}"></td>
+                            <td th:text="${product.getPrice()}"></td>
+                            <td th:text="${product.getProductType().getValue()}"></td>
+                            <td width="20">
+                                <a th:href="@{{url}(url=${product.getUrl})}" role="button" class="btn btn-outline-primary">
+                                    <img alt="Редактировать" src="images/icon-edit.png">
+                                </a></td>
+                            <td width="20">
+                                <a th:href="@{{url}/delete(url=${product.getUrl})}" role="button" class="btn btn-outline-primary">
+                                    <img alt="Удалить" src="images/icon-delete.png" onclick="return confirm('Удалить запись с ID:'+${blog.getBlogId()}+'?')">
+                                </a></td>
+                        </tr>
+                    </div>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-4 border px-4">
+                <form method="POST" th:action="@{/product/printer}" th:object="${printer}">
+                    <h3>Новый товар категории Принтеры</h3>
+                    <br>
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-3 col-form-label">Название модели</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="blogTitle" class="form-control" id="blogTitle" th:value="${printer.getProductData().getModelName()}" th:field="*{productData.modelName}"/>
+                            <span class="validationError" th:if="${#fields.hasErrors('productData.modelName')}" th:errors="*{productData.modelName}">Name Error</span>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-3 col-form-label">Стоимость</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="blogTitle" class="form-control" id="blogTitle" th:value="${printer.getProductData().getPrice()}" th:field="*{productData.price}"/>
+                            <span class="validationError" th:if="${#fields.hasErrors('productData.price')}" th:errors="*{productData.price}">Name Error</span>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-3 col-form-label">Цветной</label>
+                        <div class="col-sm-7">
+                            <input type="text" name="blogTitle" class="form-control" id="blogTitle" th:value="${printer.getTitle()}" th:field="*{title}"/>
+                            <span class="validationError" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Name Error</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Тип принтера</label>
+                        <div class="col-sm-7">
+                            <select class="form-control" th:field="*{type}">
+                                <option th:each="printerType : ${printerTypes}" th:value="${printer.getType()}" th:text="${printer.getType().getValue()}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <p> <br>
+                        <button type="submit" class="btn btn-primary">Добавить</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div th:insert="base/footer :: footer"></div>
+</div>
+</body>
+</html>
