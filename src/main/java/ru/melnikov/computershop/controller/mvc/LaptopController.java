@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.melnikov.computershop.dto.LaptopDto;
+import ru.melnikov.computershop.dto.ProductDto;
 import ru.melnikov.computershop.enumerate.ProductType;
 import ru.melnikov.computershop.exception.LaptopNotFoundException;
 import ru.melnikov.computershop.mapper.LaptopMapper;
@@ -28,17 +29,16 @@ public class LaptopController {
     private static final String PAGE_404 = "base/notfound";
     private static final String LAPTOPS_PAGE = "product/laptop/laptop";
     private static final String LAPTOP_EDIT_PAGE = "product/laptop/editlaptop";
-
-    private final ProductService productService;
     private final LaptopService laptopService;
     private final LaptopMapper laptopMapper;
-    private final ProductMapper productMapper;
 
     @GetMapping
-    public String getLaptops(Model model, LaptopDto laptop) {
-        model.addAttribute("laptop", laptop);
-        model.addAttribute("products", productMapper.toDtoList(
-                productService.filterByType(ProductType.LAPTOP)
+    public String getLaptops(Model model) {
+        model.addAttribute("laptop", LaptopDto.builder()
+                .productData(ProductDto.builder().build())
+                .build());
+        model.addAttribute("products", laptopMapper.toDtoList(
+                laptopService.getAll()
         ));
         return LAPTOPS_PAGE;
     }
@@ -46,9 +46,9 @@ public class LaptopController {
     @GetMapping("/{laptopId}")
     public String editLaptop(Model model, @PathVariable("laptopId") UUID laptopId) {
         try {
-            model.addAttribute("laptopEdit", laptopService.getById(laptopId));
-            model.addAttribute("products", productMapper.toDtoList(
-                    productService.filterByType(ProductType.LAPTOP)
+            model.addAttribute("laptop", laptopService.getById(laptopId));
+            model.addAttribute("products", laptopMapper.toDtoList(
+                    laptopService.getAll()
             ));
             return LAPTOP_EDIT_PAGE;
         } catch (LaptopNotFoundException exception) {
@@ -61,8 +61,8 @@ public class LaptopController {
     public String createLaptop(Model model, @Valid LaptopDto laptop, Errors errors) {
         if (errors.hasErrors()) {
             model.addAttribute("laptopEdit", laptop);
-            model.addAttribute("products", productMapper.toDtoList(
-                    productService.filterByType(ProductType.LAPTOP)
+            model.addAttribute("products", laptopMapper.toDtoList(
+                    laptopService.getAll()
             ));
             return LAPTOP_EDIT_PAGE;
         }
@@ -79,8 +79,8 @@ public class LaptopController {
     ) {
         if (errors.hasErrors()) {
             model.addAttribute("laptopEdit", laptop);
-            model.addAttribute("products", productMapper.toDtoList(
-                    productService.filterByType(ProductType.LAPTOP)
+            model.addAttribute("products", laptopMapper.toDtoList(
+                    laptopService.getAll()
             ));
             return LAPTOP_EDIT_PAGE;
         }

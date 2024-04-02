@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Статьи</title>
+    <title>Персональные компьютеры</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -20,27 +20,33 @@
     <div class="container-fluid">
         <div class="row justify-content-start ">
             <div class="col-8 border bg-light px-4" th:fragment="computerList">
-                <h3>Персональный компьютеры</h3>
+                <h3>Персональные компьютеры</h3>
                 <table class="table">
                     <thead>
                     <th scope="col">Название</th>
                     <th scope="col">Стоимость</th>
-                    <th scope="col">Тип продукта</th>
+                    <th scope="col">Частота работы процессора</th>
+                    <th scope="col">Объём оперативной памяти</th>
+                    <th scope="col">Объём внутренней памяти</th>
+                    <th scope="col">Тип внутреннего накопителя</th>
                     <th scope="col">Редактировать</th>
                     <th scope="col">Удалить</th>
                     </thead>
                     <tbody>
                     <div th:each="product : ${products}">
                         <tr>
-                            <td th:text="${product.getModelName()}"></td>
-                            <td th:text="${product.getPrice()}"></td>
-                            <td th:text="${product.getProductType().getValue()}"></td>
+                            <td th:text="${product.getProductData().getModelName()}"></td>
+                            <td th:text="${product.getProductData().getPrice()}"></td>
+                            <td th:text="${product.getSpeed()}"></td>
+                            <td th:text="${product.getRam()}"></td>
+                            <td th:text="${product.getHd()}"></td>
+                            <td th:text="${product.getCdType()}"></td>
                             <td width="20">
-                                <a th:href="@{{url}(url=${product.getUrl})}" role="button" class="btn btn-outline-primary">
+                                <a th:href="@{personal-computer/{productId}(productId=${product.getId()})}" role="button" class="btn btn-outline-primary">
                                     <img alt="Редактировать" src="images/icon-edit.png">
                                 </a></td>
                             <td width="20">
-                                <a th:href="@{{url}/delete(url=${product.getUrl})}" role="button" class="btn btn-outline-primary">
+                                <a th:href="@{personal-computer/{productId}/delete(productId=${product.getId()})}" role="button" class="btn btn-outline-primary">
                                     <img alt="Удалить" src="images/icon-delete.png" onclick="return confirm('Удалить запись с ID:'+${blog.getBlogId()}+'?')">
                                 </a></td>
                         </tr>
@@ -88,10 +94,10 @@
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label class="col-sm-3 col-form-label">Автор</label>
+                        <label class="col-sm-3 col-form-label">Тип внутреннего накопителя</label>
                         <div class="col-sm-7">
                             <select class="form-control" th:field="*{cdType}">
-                                <option th:each="diskType : ${diskTypes}" th:value="${computer.getCdType()}" th:text="${diskType.getValue()}"></option>
+                                <option th:each="diskType : ${diskTypes}" th:value="${diskType}" th:text="${diskType.getValue()}"></option>
                             </select>
                         </div>
                     </div>

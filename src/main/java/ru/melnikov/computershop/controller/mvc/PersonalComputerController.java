@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.melnikov.computershop.dto.PersonalComputerDto;
+import ru.melnikov.computershop.dto.ProductDto;
 import ru.melnikov.computershop.enumerate.CdType;
 import ru.melnikov.computershop.enumerate.ProductType;
 import ru.melnikov.computershop.exception.PersonalComputerNotFoundException;
@@ -27,19 +28,18 @@ public class PersonalComputerController {
 
     private static final String REDIRECT_TO_LIST = "redirect:/product/personal-computer";
     private static final String PAGE_404 = "base/notfound";
-    private static final String COMPUTERS_PAGE = "product/personal_computer/computer";
-    private static final String COMPUTER_EDIT_PAGE = "product/personal_computer/editcomputer";
-
-    private final ProductService productService;
+    private static final String COMPUTERS_PAGE = "product/computer/computer";
+    private static final String COMPUTER_EDIT_PAGE = "product/computer/editcomputer";
     private final PersonalComputerService computerService;
     private final PersonalComputerMapper computerMapper;
-    private final ProductMapper productMapper;
 
     @GetMapping
-    public String getComputers(Model model, PersonalComputerDto computer) {
-        model.addAttribute("computer", computer);
-        model.addAttribute("computers", productMapper.toDtoList(
-                productService.filterByType(ProductType.PERSONAL_COMPUTER)
+    public String getComputers(Model model) {
+        model.addAttribute("computer", PersonalComputerDto.builder()
+                .productData(ProductDto.builder().build())
+                .build());
+        model.addAttribute("products", computerMapper.toDtoList(
+                computerService.getAll()
         ));
         model.addAttribute("diskTypes", CdType.values());
         return COMPUTERS_PAGE;
@@ -48,9 +48,9 @@ public class PersonalComputerController {
     @GetMapping("/{computerId}")
     public String editComputer(Model model, @PathVariable("computerId") UUID computerId) {
         try {
-            model.addAttribute("computerEdit", computerService.getById(computerId));
-            model.addAttribute("computers", productMapper.toDtoList(
-                    productService.filterByType(ProductType.PERSONAL_COMPUTER)
+            model.addAttribute("computer", computerService.getById(computerId));
+            model.addAttribute("products", computerMapper.toDtoList(
+                    computerService.getAll()
             ));
             model.addAttribute("diskTypes", CdType.values());
             return COMPUTER_EDIT_PAGE;
@@ -63,9 +63,9 @@ public class PersonalComputerController {
     @PostMapping
     public String createComputer(Model model, @Valid PersonalComputerDto computer, Errors errors) {
         if (errors.hasErrors()) {
-            model.addAttribute("computerEdit", computer);
-            model.addAttribute("computers", productMapper.toDtoList(
-                    productService.filterByType(ProductType.PERSONAL_COMPUTER)
+            model.addAttribute("computer", computer);
+            model.addAttribute("products", computerMapper.toDtoList(
+                    computerService.getAll()
             ));
             model.addAttribute("diskTypes", CdType.values());
             return COMPUTER_EDIT_PAGE;
@@ -82,9 +82,9 @@ public class PersonalComputerController {
             Errors errors
     ) {
         if (errors.hasErrors()) {
-            model.addAttribute("computerEdit", computer);
-            model.addAttribute("computers", productMapper.toDtoList(
-                    productService.filterByType(ProductType.PERSONAL_COMPUTER)
+            model.addAttribute("computer", computer);
+            model.addAttribute("products", computerMapper.toDtoList(
+                    computerService.getAll()
             ));
             return COMPUTER_EDIT_PAGE;
         }

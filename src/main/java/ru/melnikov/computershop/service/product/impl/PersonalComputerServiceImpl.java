@@ -3,6 +3,7 @@ package ru.melnikov.computershop.service.product.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.melnikov.computershop.enumerate.ProductType;
 import ru.melnikov.computershop.exception.PersonalComputerNotFoundException;
 import ru.melnikov.computershop.model.product.PersonalComputer;
 import ru.melnikov.computershop.repository.PersonalComputerRepository;
@@ -35,15 +36,25 @@ public class PersonalComputerServiceImpl implements PersonalComputerService {
     @Override
     @Transactional
     public PersonalComputer create(PersonalComputer personalComputer) {
+        personalComputer.getProductData().setId(UUID.randomUUID());
+        personalComputer.getProductData().setProductType(ProductType.PERSONAL_COMPUTER);
         return personalComputerRepository.save(personalComputer);
     }
 
     @Override
+    @Transactional
     public PersonalComputer update(UUID computerId, PersonalComputer personalComputer) {
-        if (!personalComputerRepository.existsById(computerId)){
-            throw new PersonalComputerNotFoundException(String.format(PC_DOES_NOT_EXISTS, computerId));
-        }
-        return personalComputerRepository.save(personalComputer);
+
+        return personalComputerRepository.findById(computerId)
+                .map(computerToUpdate -> {
+                    computerToUpdate.getProductData().setModelName(personalComputer.getProductData().getModelName());
+                    computerToUpdate.getProductData().setPrice(personalComputer.getProductData().getPrice());
+                    computerToUpdate.setHd(personalComputer.getHd());
+                    computerToUpdate.setRam(personalComputer.getRam());
+                    computerToUpdate.setSpeed(personalComputer.getSpeed());
+                    computerToUpdate.setCdType(personalComputer.getCdType());
+                    return computerToUpdate;
+                }).orElseThrow(() -> new PersonalComputerNotFoundException(String.format(PC_DOES_NOT_EXISTS, computerId)));
     }
 
     @Override

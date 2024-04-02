@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Статьи</title>
+    <title>Принтеры</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -26,15 +26,33 @@
                     <h3>Редактирование данных о товаре</h3>
                     <br>
                     <div class="mb-3 row">
-                        <label for="title" class="col-sm-3 col-form-label">Заголовок</label>
+                        <label for="title" class="col-sm-3 col-form-label">Название модели</label>
                         <div class="col-sm-7">
-                            <input type="text" name="printerTitle" class="form-control" id="printerTitle" th:value="${printerEdit.getTitle()}" th:field="*{title}"/>
+                            <input type="text" name="blogTitle" class="form-control" id="blogTitle" th:value="${printerEdit.getProductData().getModelName()}" th:field="*{productData.modelName}"/>
+                            <span class="validationError" th:if="${#fields.hasErrors('productData.modelName')}" th:errors="*{productData.modelName}">Name Error</span>
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label for="content" class="col-sm-3 col-form-label">Текст</label>
+                        <label for="title" class="col-sm-3 col-form-label">Стоимость</label>
                         <div class="col-sm-7">
-                            <input type="text" name="printerContent" class="form-control" id="printerContent"  th:value="${printerEdit.getContent()}" th:field="*{content}"/>
+                            <input type="text" name="blogTitle" class="form-control" id="blogTitle" th:value="${printerEdit.getProductData().getPrice()}" th:field="*{productData.price}"/>
+                            <span class="validationError" th:if="${#fields.hasErrors('productData.price')}" th:errors="*{productData.price}">Name Error</span>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-3 col-form-label">Цветной</label>
+                        <div class="col-sm-7">
+                            <input type="checkbox" name="coloured" class="form-check-input" id="coloured" th:value="${printerEdit.getColoured()}" th:field="*{coloured}"/>
+                            <span class="validationError" th:if="${#fields.hasErrors('coloured')}" th:errors="*{coloured}">Name Error</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label">Тип принтера</label>
+                        <div class="col-sm-7">
+                            <select class="form-control" th:field="*{type}">
+                                <option th:each="printerType : ${printerTypes}" th:value="${printerType}" th:text="${printerType.getValue()}"></option>
+                            </select>
                         </div>
                     </div>
                     <p> <br><button type="submit" class="btn btn-primary">Изменить</button></p>

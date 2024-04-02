@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Статьи</title>
+    <title>Ноутбуки</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -22,7 +22,7 @@
         <div class="row justify-content-start ">
             <p th:insert="~{product/laptop/laptop :: laptopList}">
             <div class="col-4 border px-4">
-                <form method="post" th:action="@{product/laptop/{laptopId}(laptopId=${laptop.getId()})}" th:object="${laptop}">
+                <form method="post" th:action="@{/product/laptop/{laptopId}(laptopId=${laptop.getId()})}" th:object="${laptop}">
                     <h3>Редактирование данных о товаре</h3>
                     <br>
                     <div class="mb-3 row">

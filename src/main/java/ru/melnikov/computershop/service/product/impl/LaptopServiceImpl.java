@@ -3,6 +3,7 @@ package ru.melnikov.computershop.service.product.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.melnikov.computershop.enumerate.ProductType;
 import ru.melnikov.computershop.exception.LaptopNotFoundException;
 import ru.melnikov.computershop.model.product.Laptop;
 import ru.melnikov.computershop.repository.LaptopRepository;
@@ -34,15 +35,25 @@ public class LaptopServiceImpl implements LaptopService {
     @Override
     @Transactional
     public Laptop create(Laptop laptop) {
+        laptop.getProductData().setId(UUID.randomUUID());
+        laptop.getProductData().setProductType(ProductType.LAPTOP);
         return laptopRepository.save(laptop);
     }
 
     @Override
+    @Transactional
     public Laptop update(UUID laptopId, Laptop laptop) {
-        if (!laptopRepository.existsById(laptopId)){
-            throw new LaptopNotFoundException(String.format(LAPTOP_DOES_NOT_EXISTS, laptopId));
-        }
-        return laptopRepository.save(laptop);
+
+        return laptopRepository.findById(laptopId)
+                .map(laptopToUpdate -> {
+                    laptopToUpdate.getProductData().setModelName(laptop.getProductData().getModelName());
+                    laptopToUpdate.getProductData().setPrice(laptop.getProductData().getPrice());
+                    laptopToUpdate.setHd(laptop.getHd());
+                    laptopToUpdate.setRam(laptop.getRam());
+                    laptopToUpdate.setScreen(laptop.getScreen());
+                    laptopToUpdate.setSpeed(laptop.getSpeed());
+                    return laptopToUpdate;
+                }).orElseThrow(() -> new LaptopNotFoundException(String.format(LAPTOP_DOES_NOT_EXISTS, laptopId)));
     }
 
 
