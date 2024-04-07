@@ -44,7 +44,7 @@ public class LaptopServiceImpl implements LaptopService {
     @Transactional
     public Laptop update(UUID laptopId, Laptop laptop) {
 
-        return laptopRepository.findById(laptopId)
+        return laptopRepository.save(laptopRepository.findById(laptopId)
                 .map(laptopToUpdate -> {
                     laptopToUpdate.getProductData().setModelName(laptop.getProductData().getModelName());
                     laptopToUpdate.getProductData().setPrice(laptop.getProductData().getPrice());
@@ -53,7 +53,7 @@ public class LaptopServiceImpl implements LaptopService {
                     laptopToUpdate.setScreen(laptop.getScreen());
                     laptopToUpdate.setSpeed(laptop.getSpeed());
                     return laptopToUpdate;
-                }).orElseThrow(() -> new LaptopNotFoundException(String.format(LAPTOP_DOES_NOT_EXISTS, laptopId)));
+                }).orElseThrow(() -> new LaptopNotFoundException(String.format(LAPTOP_DOES_NOT_EXISTS, laptopId))));
     }
 
 

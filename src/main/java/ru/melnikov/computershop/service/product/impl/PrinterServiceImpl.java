@@ -45,7 +45,7 @@ public class PrinterServiceImpl implements PrinterService {
     @Override
     @Transactional
     public Printer update(UUID printerId, Printer printer) {
-        return printerRepository.findById(printerId)
+        return printerRepository.save(printerRepository.findById(printerId)
                 .map(printerToUpdate ->
                         {
                             printerToUpdate.getProductData().setModelName(printer.getProductData().getModelName());
@@ -54,14 +54,7 @@ public class PrinterServiceImpl implements PrinterService {
                             printerToUpdate.setType(printer.getType());
                             return printerToUpdate;
                         }
-                ).orElseThrow(() -> new PrinterNotFoundException(String.format(PRINTER_DOES_NOT_EXISTS, printerId)));
-//        if (!printerRepository.existsById(printerId)){
-//            throw new PrinterNotFoundException(String.format(PRINTER_DOES_NOT_EXISTS, printerId));
-//        }
-//        Printer printerToUpdate = getById(printerId);
-//        printerToUpdate.setColoured(printer.getColoured());
-//        printerToUpdate.setType(printer.getType());
-//        return printerRepository.save(printerToUpdate);
+                ).orElseThrow(() -> new PrinterNotFoundException(String.format(PRINTER_DOES_NOT_EXISTS, printerId))));
     }
 
     @Override

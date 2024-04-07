@@ -45,7 +45,7 @@ public class PersonalComputerServiceImpl implements PersonalComputerService {
     @Transactional
     public PersonalComputer update(UUID computerId, PersonalComputer personalComputer) {
 
-        return personalComputerRepository.findById(computerId)
+        return personalComputerRepository.save(personalComputerRepository.findById(computerId)
                 .map(computerToUpdate -> {
                     computerToUpdate.getProductData().setModelName(personalComputer.getProductData().getModelName());
                     computerToUpdate.getProductData().setPrice(personalComputer.getProductData().getPrice());
@@ -54,7 +54,7 @@ public class PersonalComputerServiceImpl implements PersonalComputerService {
                     computerToUpdate.setSpeed(personalComputer.getSpeed());
                     computerToUpdate.setCdType(personalComputer.getCdType());
                     return computerToUpdate;
-                }).orElseThrow(() -> new PersonalComputerNotFoundException(String.format(PC_DOES_NOT_EXISTS, computerId)));
+                }).orElseThrow(() -> new PersonalComputerNotFoundException(String.format(PC_DOES_NOT_EXISTS, computerId))));
     }
 
     @Override
