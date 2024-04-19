@@ -21,7 +21,6 @@ import ru.melnikov.computershop.enumerate.ProductType;
 import ru.melnikov.computershop.mapper.LaptopMapper;
 import ru.melnikov.computershop.model.product.Laptop;
 import ru.melnikov.computershop.service.product.LaptopService;
-import ru.melnikov.computershop.util.AuthenticationService;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -54,8 +53,6 @@ public class LaptopRestControllerTest {
     private LaptopService laptopService;
     @Autowired
     private LaptopMapper laptopMapper;
-    @Autowired
-    private AuthenticationService authenticationService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -98,7 +95,7 @@ public class LaptopRestControllerTest {
         // When
         var result = mockMvc.perform(
                 get(LAPTOP_URL)
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
@@ -115,7 +112,7 @@ public class LaptopRestControllerTest {
         // When
         var result = mockMvc.perform(
                 get(String.format(BASE_LAPTOP_URL, testLaptop.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
@@ -153,7 +150,7 @@ public class LaptopRestControllerTest {
         // When
         var result = mockMvc.perform(
                 post(LAPTOP_URL)
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(laptopPostData))
         );
@@ -169,7 +166,9 @@ public class LaptopRestControllerTest {
 
         assertThat(creationResult)
                 .usingRecursiveComparison()
-                .ignoringFields("id") // берётся из productData
+                .ignoringFields(
+                        "id", // берётся из productData
+                        "productData.id") // генерируется в сервисе
                 .isEqualTo(laptopPostData);
     }
 
@@ -190,7 +189,7 @@ public class LaptopRestControllerTest {
         // When
         var result = mockMvc.perform(
                 put(String.format(BASE_LAPTOP_URL, testLaptop.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(laptopDtoToUpdate))
         );
@@ -226,7 +225,7 @@ public class LaptopRestControllerTest {
         // When
         var result = mockMvc.perform(
                 put(String.format(BASE_LAPTOP_URL, UUID.randomUUID()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(laptopDtoToUpdate))
         );
@@ -245,7 +244,7 @@ public class LaptopRestControllerTest {
         // When
         var result = mockMvc.perform(
                 delete(String.format(BASE_LAPTOP_URL, testLaptop.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
@@ -259,10 +258,24 @@ public class LaptopRestControllerTest {
         // When
         var result = mockMvc.perform(
                 delete(String.format(BASE_LAPTOP_URL, UUID.randomUUID()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
         result.andExpect(status().isNotFound());
+    }
+
+    @Cacheable("JWT")
+    @SneakyThrows
+    private String getJwtToken(){
+        var singUpResponse = mockMvc.perform(
+                post(SIGN_UP_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(TEST_SIGN_UP_REQUEST))
+        ).andReturn();
+
+        var singUpResponseContent = singUpResponse.getResponse().getContentAsString();
+        var jwtResponse = objectMapper.readValue(singUpResponseContent, JwtAuthenticationResponse.class);
+        return jwtResponse.getToken();
     }
 }

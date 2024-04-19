@@ -51,7 +51,7 @@ public class SecurityConfig {
                         // Можно указать конкретный путь, * - 1 уровень вложенности, ** - любое количество уровней вложенности
                         .requestMatchers(String.format(BASE_URL, "auth/*")).permitAll()
                         //.requestMatchers(String.format("/api/v1/auth/**", BASE_URL)).permitAll()
-                        .anyRequest().permitAll()) // .anyRequest().authenticated()
+                        .anyRequest().authenticated()) // .anyRequest().authenticated()
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

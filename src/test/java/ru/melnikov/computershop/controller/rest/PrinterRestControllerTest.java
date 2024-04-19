@@ -8,18 +8,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.melnikov.computershop.dto.PrinterDto;
 import ru.melnikov.computershop.dto.ProductDto;
+import ru.melnikov.computershop.dto.user.JwtAuthenticationResponse;
 import ru.melnikov.computershop.enumerate.PrinterType;
 import ru.melnikov.computershop.enumerate.ProductType;
 import ru.melnikov.computershop.mapper.PrinterMapper;
 import ru.melnikov.computershop.model.product.Printer;
 import ru.melnikov.computershop.service.product.PrinterService;
-import ru.melnikov.computershop.util.AuthenticationService;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -50,8 +51,6 @@ public class PrinterRestControllerTest {
     private PrinterService printerService;
     @Autowired
     private PrinterMapper printerMapper;
-    @Autowired
-    private AuthenticationService authenticationService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -94,7 +93,7 @@ public class PrinterRestControllerTest {
         // When
         var result = mockMvc.perform(
                 get(PRINTER_URL)
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
@@ -111,7 +110,7 @@ public class PrinterRestControllerTest {
         // When
         var result = mockMvc.perform(
                 get(String.format(BASE_PRINTER_URL, testPrinter.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
@@ -147,7 +146,7 @@ public class PrinterRestControllerTest {
         // When
         var result = mockMvc.perform(
                 post(PRINTER_URL)
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(printerPostData))
         );
@@ -163,7 +162,9 @@ public class PrinterRestControllerTest {
 
         assertThat(creationResult)
                 .usingRecursiveComparison()
-                .ignoringFields("id") // берётся из productData
+                .ignoringFields(
+                        "id", // берётся из productData
+                        "productData.id") // генерируется в сервисе
                 .isEqualTo(printerPostData);
     }
 
@@ -184,7 +185,7 @@ public class PrinterRestControllerTest {
         // When
         var result = mockMvc.perform(
                 put(String.format(BASE_PRINTER_URL, testPrinter.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(printerDtoToUpdate))
         );
@@ -220,7 +221,7 @@ public class PrinterRestControllerTest {
         // When
         var result = mockMvc.perform(
                 put(String.format(BASE_PRINTER_URL, UUID.randomUUID()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(printerDtoToUpdate))
         );
@@ -239,7 +240,7 @@ public class PrinterRestControllerTest {
         // When
         var result = mockMvc.perform(
                 delete(String.format(BASE_PRINTER_URL, testPrinter.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
@@ -253,10 +254,24 @@ public class PrinterRestControllerTest {
         // When
         var result = mockMvc.perform(
                 delete(String.format(BASE_PRINTER_URL, UUID.randomUUID()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
         result.andExpect(status().isNotFound());
+    }
+
+    @Cacheable("JWT")
+    @SneakyThrows
+    private String getJwtToken(){
+        var singUpResponse = mockMvc.perform(
+                post(SIGN_UP_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(TEST_SIGN_UP_REQUEST))
+        ).andReturn();
+
+        var singUpResponseContent = singUpResponse.getResponse().getContentAsString();
+        var jwtResponse = objectMapper.readValue(singUpResponseContent, JwtAuthenticationResponse.class);
+        return jwtResponse.getToken();
     }
 }

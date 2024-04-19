@@ -8,18 +8,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.melnikov.computershop.dto.PersonalComputerDto;
 import ru.melnikov.computershop.dto.ProductDto;
+import ru.melnikov.computershop.dto.user.JwtAuthenticationResponse;
 import ru.melnikov.computershop.enumerate.CdType;
 import ru.melnikov.computershop.enumerate.ProductType;
 import ru.melnikov.computershop.mapper.PersonalComputerMapper;
 import ru.melnikov.computershop.model.product.PersonalComputer;
 import ru.melnikov.computershop.service.product.PersonalComputerService;
-import ru.melnikov.computershop.util.AuthenticationService;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -41,8 +42,6 @@ public class PersonalComputerRestControllerTest {
     private PersonalComputerService computerService;
     @Autowired
     private PersonalComputerMapper computerMapper;
-    @Autowired
-    private AuthenticationService authenticationService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -85,7 +84,7 @@ public class PersonalComputerRestControllerTest {
         // When
         var result = mockMvc.perform(
                 get(PERSONAL_COMPUTER_URL)
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
@@ -102,7 +101,7 @@ public class PersonalComputerRestControllerTest {
         // When
         var result = mockMvc.perform(
                 get(String.format(BASE_PERSONAL_COMPUTER_URL, testComputer.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
@@ -140,7 +139,7 @@ public class PersonalComputerRestControllerTest {
         // When
         var result = mockMvc.perform(
                 post(PERSONAL_COMPUTER_URL)
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(computerPostData))
         );
@@ -156,7 +155,9 @@ public class PersonalComputerRestControllerTest {
 
         assertThat(creationResult)
                 .usingRecursiveComparison()
-                .ignoringFields("id") // берётся из productData
+                .ignoringFields(
+                        "id", // берётся из productData
+                        "productData.id") // генерируется в сервисе
                 .isEqualTo(computerPostData);
     }
 
@@ -177,7 +178,7 @@ public class PersonalComputerRestControllerTest {
         // When
         var result = mockMvc.perform(
                 put(String.format(BASE_PERSONAL_COMPUTER_URL, testComputer.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(computerDtoToUpdate))
         );
@@ -213,7 +214,7 @@ public class PersonalComputerRestControllerTest {
         // When
         var result = mockMvc.perform(
                 put(String.format(BASE_PERSONAL_COMPUTER_URL, UUID.randomUUID()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(computerDtoToUpdate))
         );
@@ -232,7 +233,7 @@ public class PersonalComputerRestControllerTest {
         // When
         var result = mockMvc.perform(
                 delete(String.format(BASE_PERSONAL_COMPUTER_URL, testComputer.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
@@ -246,10 +247,24 @@ public class PersonalComputerRestControllerTest {
         // When
         var result = mockMvc.perform(
                 delete(String.format(BASE_PERSONAL_COMPUTER_URL, UUID.randomUUID()))
-                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, authenticationService.getJwtToken()))
+                        .header(HttpHeaders.AUTHORIZATION, String.format(BEARER_BASE, getJwtToken()))
         );
 
         // Then
         result.andExpect(status().isNotFound());
+    }
+
+    @Cacheable("JWT")
+    @SneakyThrows
+    private String getJwtToken(){
+        var singUpResponse = mockMvc.perform(
+                post(SIGN_UP_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(TEST_SIGN_UP_REQUEST))
+        ).andReturn();
+
+        var singUpResponseContent = singUpResponse.getResponse().getContentAsString();
+        var jwtResponse = objectMapper.readValue(singUpResponseContent, JwtAuthenticationResponse.class);
+        return jwtResponse.getToken();
     }
 }
