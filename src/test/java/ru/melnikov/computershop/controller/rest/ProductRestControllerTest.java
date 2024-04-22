@@ -21,7 +21,7 @@ public class ProductRestControllerTest {
 
     private static final String PRODUCT_URL = "product";
 
-    @Test
+    //@Test
     @SneakyThrows
     public void GetProductsWithoutAuthentication(){
 

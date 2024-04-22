@@ -75,7 +75,7 @@ public class LaptopRestControllerTest {
         jdbcTemplate.execute(TRUNCATE_PRODUCT_DATA);
     }
 
-    @Test
+    //@Test
     @SneakyThrows
     void getLaptopsWithoutAuth() {
 

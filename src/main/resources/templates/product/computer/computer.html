@@ -42,11 +42,11 @@
                             <td th:text="${product.getHd()}"></td>
                             <td th:text="${product.getCdType()}"></td>
                             <td width="20">
-                                <a th:href="@{personal-computer/{productId}(productId=${product.getId()})}" role="button" class="btn btn-outline-primary">
+                                <a th:href="@{/product/personal-computer/{productId}(productId=${product.getId()})}" role="button" class="btn btn-outline-primary">
                                     <img alt="Редактировать" src="images/icon-edit.png">
                                 </a></td>
                             <td width="20">
-                                <a th:href="@{personal-computer/{productId}/delete(productId=${product.getId()})}" role="button" class="btn btn-outline-primary">
+                                <a th:href="@{/product/personal-computer/{productId}/delete(productId=${product.getId()})}" role="button" class="btn btn-outline-primary">
                                     <img alt="Удалить" src="images/icon-delete.png" onclick="return confirm('Удалить запись с ID:'+${blog.getBlogId()}+'?')">
                                 </a></td>
                         </tr>
